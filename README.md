@@ -1,0 +1,4 @@
+extensible-config
+==========
+
+Extensible configs
