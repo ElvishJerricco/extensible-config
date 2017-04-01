@@ -21,6 +21,9 @@ instance Monad m => Monoid (EndoM m a) where
 fixEndoM :: MonadFix m => EndoM m a -> m a
 fixEndoM (EndoM f) = mfix f
 
+hoistEndoM :: (m a -> n a) -> EndoM m a -> EndoM n a
+hoistEndoM f (EndoM g) = EndoM (f . g)
+
 configureM :: MonadFix m => (super -> m self) -> EndoM (ReaderT self m) super -> m self
 configureM f e = mfix (runReaderT (lift . f =<< fixEndoM e))
 
