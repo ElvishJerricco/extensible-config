@@ -21,8 +21,8 @@ instance Monad m => Monoid (EndoM m a) where
 fixEndoM :: MonadFix m => EndoM m a -> m a
 fixEndoM (EndoM f) = mfix f
 
-configureM :: MonadFix m => (a -> self) -> EndoM (ReaderT self m) a -> m self
-configureM f e = mfix (runReaderT (f <$> fixEndoM e))
+configureM :: MonadFix m => (super -> m self) -> EndoM (ReaderT self m) super -> m self
+configureM f e = mfix (runReaderT (lift . f =<< fixEndoM e))
 
 overriding :: Setter' (EndoM m s) s
 overriding = sets $ \f (EndoM g) -> EndoM (g . f)
@@ -43,4 +43,4 @@ fixEndo = runIdentity . fixEndoM
 type Configurable self a = EndoM (Reader self) a
 
 configure :: (a -> self) -> Configurable self a -> self
-configure f = runIdentity . configureM f
+configure f = runIdentity . configureM (Identity . f)
