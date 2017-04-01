@@ -31,6 +31,9 @@ overriding = sets $ \f (EndoM g) -> EndoM (g . f)
 
 type Endo = EndoM Identity
 
+endo :: (a -> a) -> Endo a
+endo f = EndoM (Identity . f)
+
 appEndo :: Endo a -> a -> a
 appEndo (EndoM f) = runIdentity . f
 
